@@ -251,6 +251,4 @@ __pycache__/
 
 ---
 
-## Status
 
-> ✅ Complete and working
