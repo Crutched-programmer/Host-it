@@ -8,7 +8,7 @@ A lightweight self-hosted automation system powered by a repurposed old PC.
 
 ## Overview
 
-Host-it is a local-first automation environment designed to run on low-resource hardware. It uses a repurposed old PC as a central server to execute scripts, manage workflows, and host small-scale systems without relying on cloud infrastructure.
+Host-it is a local-first list of scripts designed to be hosted on old hardware. It uses a repurposed old PC as a central server to execute scripts, manage workflows, and host small-scale systems without relying on cloud infrastructure.
 
 The project focuses on simplicity, modularity, and reproducibility.
 
