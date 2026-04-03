@@ -2,7 +2,7 @@
 
 # Host-it
 
-A lightweight self-hosted automation system powered by a repurposed old PC.
+>A lightweight self-hosted automation system powered by a repurposed old PC.
 
 ---
 
@@ -41,14 +41,14 @@ Projects are added as individual modules, each with:
 
 ## Repository Structure
 
-Each project/module should include:
-
-* A dedicated folder (optional)
+Each project/module should be as such:
 * A `<project-name>.md` file containing:
 
   * Setup instructions
   * Project explanation
   * Usage details
+  * complete code files in proper codeblocks
+  * (You may check out any of the existing markdown files for better inspiration...)
 
 ---
 
@@ -61,7 +61,7 @@ Contributions are welcome. The goal is to expand Host-it with useful, lightweigh
 * Add new automation scripts
 * Create new modules/projects
 * Improve documentation
-* Optimize existing workflows
+* Optimize existing code
 
 ### Contribution Process
 
@@ -75,7 +75,7 @@ Contributions are welcome. The goal is to expand Host-it with useful, lightweigh
 
 ## Contribution Guidelines
 
-* Keep projects lightweight
+* Keep projects lightweight (Keep in mind the fact that your project will be run on old computers. Keep your solutions as lightweight as possible)
 * Avoid unnecessary dependencies
 * Ensure compatibility with Linux (or WSL)
 * Write clear, step-by-step setup instructions
@@ -219,3 +219,6 @@ Optional ideas for expansion:
 ## Notes
 
 Any extra information that may help users or contributors.
+
+
+<p>Your contribution to this project is welcome! </p>
