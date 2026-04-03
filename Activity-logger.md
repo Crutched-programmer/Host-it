@@ -1,4 +1,4 @@
-# Day-log 🌊
+#  🌊
 > A self-hosted passive activity logger. Answers "what did I actually do today?" — without sending your data anywhere.
 
 ---
@@ -15,12 +15,12 @@
 ## Project Structure
 
 ```
-driftlog/
-├── driftlog.py    # Main CLI — notes, reports, search
+Activity-Logger/
+├── Activity-Logger.py    # Main CLI — notes, reports, search
 ├── tracker.py     # Background daemon — window watcher
 ├── db.py          # SQLite read/write helpers
 ├── report.py      # HTML timeline generator
-└── driftlog.db    # Auto-created on first run (gitignore this)
+└── Activity-Logger.db    # Auto-created on first run (gitignore this)
 ```
 
 ---
@@ -40,15 +40,15 @@ sudo apt install xdotool libnotify-bin
 ### 2. Clone & enter project
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/driftlog.git
-cd driftlog
+git clone https://github.com/YOUR_USERNAME/Activity-Logger.git
+cd Activity-Logger
 # No pip installs needed — stdlib only (sqlite3, subprocess, argparse)
 ```
 
 ### 3. Run any command — DB auto-creates on first use
 
 ```bash
-python driftlog.py
+python Activity-Logger.py
 ```
 
 ### 4. Start the background tracker (separate terminal)
@@ -60,38 +60,38 @@ python tracker.py --interval 30
 ### 5. Drop notes anytime
 
 ```bash
-python driftlog.py note "fixed the navbar bug"
-python driftlog.py note "took a break, back at 3pm"
+python Activity-Logger.py note "fixed the navbar bug"
+python Activity-Logger.py note "took a break, back at 3pm"
 ```
 
 ### 6. Generate today's report
 
 ```bash
-python driftlog.py report today
+python Activity-Logger.py report today
 # Opens HTML timeline in browser automatically
 
-python driftlog.py report 2025-03-31
+python Activity-Logger.py report 2025-03-31
 ```
 
 ### 7. Search history
 
 ```bash
-python driftlog.py search "flask"
-python driftlog.py search "youtube"
+python Activity-Logger.py search "flask"
+python Activity-Logger.py search "youtube"
 ```
 
 ---
 
 ## Auto-start tracker on boot (Linux systemd)
 
-Create `/etc/systemd/user/driftlog.service`:
+Create `/etc/systemd/user/Activity-Logger.service`:
 
 ```ini
 [Unit]
-Description=driftlog window tracker
+Description=Activity-Logger window tracker
 
 [Service]
-WorkingDirectory=/path/to/driftlog
+WorkingDirectory=/path/to/Activity-Logger
 ExecStart=/usr/bin/python3 tracker.py --interval 30
 Restart=always
 
@@ -100,8 +100,8 @@ WantedBy=default.target
 ```
 
 ```bash
-systemctl --user enable driftlog
-systemctl --user start driftlog
+systemctl --user enable Activity-Logger
+systemctl --user start Activity-Logger
 ```
 
 ---
@@ -109,7 +109,7 @@ systemctl --user start driftlog
 ## .gitignore
 
 ```
-driftlog.db
+Activity-Logger.db
 report_*.html
 __pycache__/
 *.pyc
@@ -138,7 +138,7 @@ venv/
 
 ```python
 """
-db.py — SQLite read/write helpers for driftlog.
+db.py — SQLite read/write helpers for Activity-Logger.
 All activity events and notes are stored in a single local DB file.
 """
 
@@ -147,7 +147,7 @@ import os
 from datetime import datetime
 
 # Default DB path — lives next to this script
-DB_PATH = os.path.join(os.path.dirname(__file__), "driftlog.db")
+DB_PATH = os.path.join(os.path.dirname(__file__), "Activity-Logger.db")
 
 
 def get_conn():
@@ -344,7 +344,7 @@ def run(interval: int):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="driftlog background window tracker")
+    parser = argparse.ArgumentParser(description="Activity-Logger background window tracker")
     parser.add_argument("--interval", type=int, default=30,
                         help="Polling interval in seconds (default: 30)")
     args = parser.parse_args()
@@ -406,7 +406,7 @@ def generate_html(events: list, date_str: str) -> str:
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>driftlog — {date_str}</title>
+  <title>Activity-Logger — {date_str}</title>
   <style>
     * {{ box-sizing: border-box; margin: 0; padding: 0; }}
     body {{ background:#0d0f14; color:#c9d1d9; font-family:'Courier New',monospace; padding:2rem; max-width:860px; margin:0 auto; }}
@@ -424,7 +424,7 @@ def generate_html(events: list, date_str: str) -> str:
   </style>
 </head>
 <body>
-  <h1>🌊 driftlog</h1>
+  <h1>🌊 Activity-Logger</h1>
   <p class="subtitle">Daily timeline — {date_str} &nbsp;·&nbsp; {len(events)} events</p>
   <div class="timeline">{rows_html}</div>
 </body>
@@ -454,17 +454,17 @@ if __name__ == "__main__":
 
 ---
 
-## `driftlog.py`
+## `Activity-Logger.py`
 
 ```python
 """
-driftlog.py — Main CLI entrypoint.
+Activity-Logger.py — Main CLI entrypoint.
 
 Commands:
-  python driftlog.py note "finished the auth module"
-  python driftlog.py report today
-  python driftlog.py report 2025-03-31
-  python driftlog.py search "navbar"
+  python Activity-Logger.py note "finished the auth module"
+  python Activity-Logger.py report today
+  python Activity-Logger.py report 2025-03-31
+  python Activity-Logger.py search "navbar"
 """
 
 import sys
@@ -476,11 +476,11 @@ from datetime import datetime
 def cmd_note(args):
     """Drop a manual timestamped note into the database."""
     if not args:
-        print("Usage: python driftlog.py note \"your note here\"")
+        print("Usage: python Activity-Logger.py note \"your note here\"")
         sys.exit(1)
     content = " ".join(args)
     insert_note(content)
-    print(f"[driftlog] Note saved: \"{content}\"")
+    print(f"[Activity-Logger] Note saved: \"{content}\"")
 
 
 def cmd_report(args):
@@ -492,17 +492,17 @@ def cmd_report(args):
 def cmd_search(args):
     """Search all activity + notes for a keyword."""
     if not args:
-        print("Usage: python driftlog.py search \"keyword\"")
+        print("Usage: python Activity-Logger.py search \"keyword\"")
         sys.exit(1)
 
     query = " ".join(args)
     results = search_events(query)
 
     if not results:
-        print(f"[driftlog] No results for: \"{query}\"")
+        print(f"[Activity-Logger] No results for: \"{query}\"")
         return
 
-    print(f"[driftlog] {len(results)} result(s) for \"{query}\":\n")
+    print(f"[Activity-Logger] {len(results)} result(s) for \"{query}\":\n")
     for r in results:
         ts = datetime.fromisoformat(r["timestamp"]).strftime("%Y-%m-%d %H:%M")
         if r["type"] == "note":
@@ -513,7 +513,7 @@ def cmd_search(args):
 
 def print_help():
     print("""
-🌊 driftlog — passive activity logger
+🌊 Activity-Logger — passive activity logger
 
 Commands:
   note <text>         Save a manual note
@@ -539,7 +539,7 @@ if __name__ == "__main__":
     elif command == "search":
         cmd_search(rest)
     else:
-        print(f"[driftlog] Unknown command: '{command}'")
+        print(f"[Activity-Logger] Unknown command: '{command}'")
         print_help()
         sys.exit(1)
 ```
