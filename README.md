@@ -1,6 +1,6 @@
 
 
-# Host-it
+<h1>Host It</h1>
 
 >A lightweight self-hosted automation system powered by a repurposed old PC.
 
