@@ -1,6 +1,6 @@
 
 
-<h1>Host It</h1>
+<h1><a href="https://crutched-programmer.github.io/Host-it/">Host-it</a></h1>
 
 >A lightweight self-hosted automation system powered by a repurposed old PC.
 
