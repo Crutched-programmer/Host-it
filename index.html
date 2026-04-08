@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host-it</title>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --white: #ffffff;
+            --off: #f5f5f7;
+            --border: #d2d2d7;
+            --text: #1d1d1f;
+            --sub: #6e6e73;
+            --hint: #a1a1a6;
+            --accent: #0071e3;
+            --pink-bg: #fce4ec;
+            --pink-mid: #f8bbd0;
+            --pink-bdr: #f48fb1;
+            --pink-txt: #880e4f;
+            --radius: 14px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--white);
+            color: var(--text);
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+            font-weight: 700;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* NAV */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 48px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 36px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--sub);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        /* HERO — pastel pink */
+        .hero {
+            background: var(--pink-bg);
+            border-bottom: 1px solid var(--pink-bdr);
+            text-align: center;
+            padding: 100px 24px 80px;
+        }
+
+        .hero-eyebrow {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--pink-txt);
+            opacity: 0.7;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 700;
+            letter-spacing: -0.035em;
+            line-height: 1.05;
+            color: var(--pink-txt);
+            margin-bottom: 20px;
+        }
+
+        .hero-sub {
+            font-size: 1.05rem;
+            font-weight: 400;
+            color: var(--pink-txt);
+            opacity: 0.65;
+            line-height: 1.65;
+            max-width: 480px;
+            margin: 0 auto 48px;
+        }
+
+        .hero-count-wrap {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid var(--pink-bdr);
+            border-radius: var(--radius);
+            padding: 20px 48px;
+        }
+
+        .hero-count {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            color: var(--pink-txt);
+            line-height: 1;
+        }
+
+        .hero-count-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--pink-txt);
+            opacity: 0.5;
+        }
+
+        /* PROJECTS */
+        .projects {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 80px 48px 120px;
+        }
+
+        .projects-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 36px;
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--hint);
+        }
+
+        /* FILTERS */
+        .filters {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .filter-btn {
+            padding: 7px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 980px;
+            color: var(--sub);
+            font-family: "Segoe UI", system-ui, sans-serif;
+            font-weight: 700;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--text);
+            color: var(--text);
+        }
+
+        .filter-btn.active {
+            background: var(--text);
+            border-color: var(--text);
+            color: #fff;
+        }
+
+        /* APP-TILE GRID */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        /* TILE */
+        .tile {
+            background: var(--off);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px 16px 16px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            opacity: 0;
+            animation: popIn 0.35s forwards;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            user-select: none;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.94);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .tile:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.09);
+        }
+
+        .tile:active {
+            transform: scale(0.98);
+        }
+
+        /* TILE ICON */
+        .tile-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .ic-util {
+            background: #ede9fe;
+        }
+
+        .ic-lan {
+            background: #dbeafe;
+        }
+
+        .ic-sys {
+            background: #dcfce7;
+        }
+
+        .ic-files {
+            background: #fef9c3;
+        }
+
+        .ic-audio {
+            background: #fce7f3;
+        }
+
+        .ic-hw {
+            background: #ffedd5;
+        }
+
+        .tile-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: var(--text);
+            line-height: 1.2;
+        }
+
+        .tile-desc {
+            font-size: 0.72rem;
+            font-weight: 400;
+            color: var(--sub);
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .tile-tag {
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 980px;
+            align-self: flex-start;
+        }
+
+        .tag-util {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .tag-lan {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .tag-sys {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .tag-files {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .tag-audio {
+            background: #fce7f3;
+            color: #9d174d;
+        }
+
+        .tag-hw {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        /* README SECTION */
+        .readme-section {
+            background: var(--off);
+            border-top: 1px solid var(--border);
+        }
+
+        .readme-inner {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 100px 48px;
+        }
+
+        .readme-inner>.section-label {
+            display: block;
+            margin-bottom: 48px;
+        }
+
+        .readme-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+        }
+
+        .readme-block {}
+
+        .readme-block-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 14px;
+            color: var(--text);
+        }
+
+        .readme-block-body {
+            font-size: 0.88rem;
+            font-weight: 400;
+            color: var(--sub);
+            line-height: 1.8;
+        }
+
+        .readme-block-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .readme-block-list li {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--sub);
+            line-height: 1.6;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .readme-block-list li::before {
+            content: '–';
+            position: absolute;
+            left: 0;
+            color: var(--hint);
+        }
+
+        .readme-code {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin-top: 14px;
+            font-family: "Cascadia Code", "Consolas", monospace;
+            font-size: 0.78rem;
+            font-weight: 400;
+            color: var(--text);
+            line-height: 1.7;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .readme-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-top: 12px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .flow-step:last-child {
+            border-bottom: none;
+        }
+
+        .flow-num {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            min-width: 24px;
+            padding-top: 2px;
+        }
+
+        .flow-text {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--sub);
+            line-height: 1.65;
+        }
+
+        .flow-text strong {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 20px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        footer span {
+            font-size: 0.72rem;
+            font-weight: 400;
+            color: var(--hint);
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* SHEET MODAL */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.38);
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+
+        .overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .sheet {
+            background: var(--white);
+            width: 100%;
+            max-width: 680px;
+            max-height: 88vh;
+            border-radius: 20px 20px 0 0;
+            overflow-y: auto;
+            transform: translateY(40px);
+            transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+            scrollbar-width: none;
+        }
+
+        .overlay.open .sheet {
+            transform: translateY(0);
+        }
+
+        .sheet-handle {
+            width: 36px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 12px auto 0;
+        }
+
+        .sheet-header {
+            padding: 20px 32px 20px;
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sheet-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 6px;
+        }
+
+        .sheet-name {
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .sheet-close {
+            background: var(--off);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: var(--sub);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 6px;
+            transition: background 0.15s;
+        }
+
+        .sheet-close:hover {
+            background: var(--border);
+        }
+
+        .sheet-tagline {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--sub);
+            line-height: 1.5;
+        }
+
+        .sheet-body {
+            padding: 28px 32px 52px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .detail-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--hint);
+            margin-bottom: 10px;
+        }
+
+        .detail-text {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--sub);
+            line-height: 1.7;
+        }
+
+        .detail-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .detail-list li {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--sub);
+            line-height: 1.6;
+            padding-left: 14px;
+            position: relative;
+        }
+
+        .detail-list li::before {
+            content: '–';
+            position: absolute;
+            left: 0;
+            color: var(--hint);
+        }
+
+        .detail-code {
+            background: var(--off);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 18px;
+            font-family: "Cascadia Code", "Consolas", monospace;
+            font-size: 0.78rem;
+            font-weight: 400;
+            color: var(--text);
+            line-height: 1.7;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .detail-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .detail-pill {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--sub);
+            background: var(--off);
+            border: 1px solid var(--border);
+            padding: 5px 12px;
+            border-radius: 7px;
+        }
+
+        .port-badge {
+            display: inline-block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: #e8f4fd;
+            border: 1px solid #b5d4f4;
+            padding: 5px 14px;
+            border-radius: 7px;
+            font-family: "Cascadia Code", "Consolas", monospace;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 860px) {
+            .readme-grid {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                padding: 0 20px;
+            }
+
+            .hero {
+                padding: 80px 20px 60px;
+            }
+
+            .projects {
+                padding: 60px 20px 80px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 12px;
+            }
+
+            .readme-inner {
+                padding: 60px 20px;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 6px;
+                text-align: center;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <span class="nav-logo">host-it</span>
+        <ul class="nav-links">
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#readme">About</a></li>
+            <li><a href="https://github.com/Crutched_programmer" target="_blank">GitHub ↗</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <p class="hero-eyebrow">Local-first automation ecosystem</p>
+        <h1>Built for<br>your hardware.</h1>
+        <p class="hero-sub">Self-hosted tools that run on your own PC. No cloud, no subscriptions, no nonsense.</p>
+        <div class="hero-count-wrap">
+            <span class="hero-count" id="proj-count">18</span>
+            <span class="hero-count-label">Projects</span>
+        </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="projects" id="projects">
+        <div class="projects-header">
+            <span class="section-label">Projects</span>
+            <span class="section-label" id="count-label"></span>
+        </div>
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="util">Utility</button>
+            <button class="filter-btn" data-filter="lan">Network</button>
+            <button class="filter-btn" data-filter="sys">System</button>
+            <button class="filter-btn" data-filter="files">Files</button>
+            <button class="filter-btn" data-filter="audio">Audio</button>
+            <button class="filter-btn" data-filter="hw">Hardware</button>
+        </div>
+        <div class="grid" id="grid"></div>
+    </section>
+
+    <!-- README SECTION -->
+    <section class="readme-section" id="readme">
+        <div class="readme-inner">
+            <span class="section-label">// README</span>
+            <div class="readme-grid">
+
+                <div class="readme-block">
+                    <div class="readme-block-title">Overview</div>
+                    <p class="readme-block-body">
+                        Host-it is a lightweight, local-first automation ecosystem designed to run on a repurposed old
+                        PC running Linux. All projects are simple, modular, and built to work without cloud
+                        dependencies. Each tool does one job and does it well — no bloat, no external APIs, no
+                        subscriptions.
+                    </p>
+                    <p class="readme-block-body" style="margin-top:12px;">
+                        The ecosystem runs entirely on your own hardware. A 4th-gen i3 with 4GB RAM on Ubuntu is enough
+                        to run the full stack simultaneously. Python stdlib is the primary dependency — no pip installs
+                        required for most projects.
+                    </p>
+                </div>
+
+                <div class="readme-block">
+                    <div class="readme-block-title">Purpose</div>
+                    <ul class="readme-block-list">
+                        <li>Make automation accessible on recycled hardware</li>
+                        <li>Eliminate dependency on cloud services for personal tooling</li>
+                        <li>Build tools that are readable, modifiable, and truly owned</li>
+                        <li>Give every idea a push-ready home on GitHub immediately</li>
+                    </ul>
+                </div>
+
+                <div class="readme-block">
+                    <div class="readme-block-title">How It Works</div>
+                    <p class="readme-block-body">Each Host-it project follows the same pattern:</p>
+                    <div class="readme-flow">
+                        <div class="flow-step">
+                            <span class="flow-num">01</span>
+                            <span class="flow-text"><strong>A Python script or Bash daemon</strong> runs on the host
+                                machine, listening or watching for input.</span>
+                        </div>
+                        <div class="flow-step">
+                            <span class="flow-num">02</span>
+                            <span class="flow-text"><strong>A local web UI or CLI</strong> provides the interface —
+                                accessible on LAN from any device.</span>
+                        </div>
+                        <div class="flow-step">
+                            <span class="flow-num">03</span>
+                            <span class="flow-text"><strong>Data is stored locally</strong> — plaintext, SQLite, or flat
+                                files. No external database required.</span>
+                        </div>
+                        <div class="flow-step">
+                            <span class="flow-num">04</span>
+                            <span class="flow-text"><strong>A README ships with every tool</strong>, structured for
+                                immediate commit via <code
+                                    style="font-family:monospace;font-size:0.8em;background:var(--border);padding:1px 5px;border-radius:4px;">push.sh</code>.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="readme-block">
+                    <div class="readme-block-title">Install &amp; Run</div>
+                    <p class="readme-block-body">Every project follows the same setup pattern:</p>
+                    <div class="readme-code">git clone https://github.com/Crutched_programmer/&lt;project&gt;
+                        cd &lt;project&gt;
+
+                        # Install deps (most have none)
+                        pip install -r requirements.txt --break-system-packages
+
+                        # Run
+                        python3 app.py</div>
+                    <p class="readme-block-body" style="margin-top:14px;">
+                        For LAN access, find your machine's IP with <code
+                            style="font-family:monospace;font-size:0.82em;background:var(--border);padding:1px 5px;border-radius:4px;">hostname -I</code>
+                        and open <code
+                            style="font-family:monospace;font-size:0.82em;background:var(--border);padding:1px 5px;border-radius:4px;">http://&lt;ip&gt;:&lt;port&gt;</code>
+                        on any device on the network.
+                    </p>
+                </div>
+
+                <div class="readme-block">
+                    <div class="readme-block-title">Design Philosophy</div>
+                    <ul class="readme-block-list">
+                        <li><strong style="color:var(--text);">Local-first</strong> — everything works without internet
+                            access</li>
+                        <li><strong style="color:var(--text);">Minimal deps</strong> — Python stdlib and system tools
+                            over pip packages</li>
+                        <li><strong style="color:var(--text);">One job, done well</strong> — no feature creep, no bloat
+                        </li>
+                        <li><strong style="color:var(--text);">Readable code</strong> — commented throughout, no magic
+                        </li>
+                        <li><strong style="color:var(--text);">Push-ready</strong> — README + structure ready for GitHub
+                            on day one</li>
+                    </ul>
+                </div>
+
+                <div class="readme-block">
+                    <div class="readme-block-title">Future Direction</div>
+                    <ul class="readme-block-list">
+                        <li>Build out SyncDrop as the backbone for cross-project data sharing</li>
+                        <li>Unified dashboard — one web UI to monitor all running Host-it services</li>
+                        <li>Auto-start via systemd service files for each project</li>
+                        <li>Add notification layer — desktop or webhook alerts across tools</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <span>host-it · <a href="https://github.com/Crutched_programmer"
+                target="_blank">github.com/Crutched_programmer</a></span>
+        <span>linux · python · zero cloud</span>
+    </footer>
+
+    <!-- SHEET MODAL -->
+    <div class="overlay" id="overlay">
+        <div class="sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+                <div class="sheet-top">
+                    <span class="sheet-name" id="s-name"></span>
+                    <button class="sheet-close" id="s-close">✕</button>
+                </div>
+                <p class="sheet-tagline" id="s-tagline"></p>
+            </div>
+            <div class="sheet-body" id="s-body"></div>
+        </div>
+    </div>
+
+    <script>
+        const ICONS = {
+            util: ['🧰', '📋', '📝', '🔍', '📂', '⚡', '🗃️', '🌐'],
+            lan: ['🌐', '📡', '🔗', '📶', '🖧', '📤', '📥', '🔌'],
+            sys: ['📊', '🖥️', '📈', '🔧', '⚙️', '🗂️'],
+            files: ['📁', '🗄️', '📦', '🔒', '🖼️', '💾'],
+            audio: ['🎵', '🎙️', '🎚️', '🔊'],
+            hw: ['🔌', '🔧', '⚡', '🖥️']
+        };
+        let iconCounters = {};
+
+        function getIcon(tag) {
+            if (!iconCounters[tag]) iconCounters[tag] = 0;
+            const arr = ICONS[tag] || ['📦'];
+            const icon = arr[iconCounters[tag] % arr.length];
+            iconCounters[tag]++;
+            return icon;
+        }
+
+        const projects = [
+            {
+                id: 1, name: "Idea-Logger", tag: "util", tagLabel: "Utility",
+                desc: "Local plaintext idea inbox. One command — timestamped and saved.",
+                tagline: "Local idea inbox with CLI capture and a LAN web UI. Append-only, zero deps beyond Python.",
+                stack: ["Python 3", "http.server", "argparse", "Vanilla JS", "Plaintext .txt"],
+                problem: "Ideas arrive mid-terminal or at 2AM. Most die because the friction of opening a notes app kills the impulse. One command — done.",
+                features: ["Instant CLI capture from anywhere", "LAN web UI — any device, no install", "Plaintext storage, human-readable forever", "Auto-timestamping on every entry", "#tag support for loose categorisation", "Keyword + tag search from CLI", "Zero deps beyond Python stdlib"],
+                usage: `python3 idea.py "Build a rack-mount enclosure"\npython3 idea.py "#hardware Mount the Pi cluster"\npython3 idea.py --list\npython3 idea.py --search "#hardware"`,
+                port: "6060",
+                limits: ["Append-only — no edit or delete via UI", "Single flat file", "LAN only"],
+                future: ["Delete/archive via web UI", "Export to JSON or Markdown", "Sync via SyncDrop"]
+            },
+            {
+                id: 2, name: "LinkDrop", tag: "lan", tagLabel: "Network",
+                desc: "LAN URL clipboard. Drop a link on one device, open it on another.",
+                tagline: "One-click LAN clipboard for URLs between any devices on your network.",
+                stack: ["Python 3", "Flask", "HTML", "Vanilla JS"],
+                problem: "Sending a URL from phone to PC without cloud sync. LinkDrop is a local clipboard that lives on your LAN.",
+                features: ["Paste URL on one device, open on any other", "Single-page web UI", "Click-to-copy on receiving end", "Auto-clear after retrieval (optional)", "No accounts or sync service"],
+                usage: `python3 app.py\n# Access at http://<lan-ip>:5100`,
+                port: "5100",
+                limits: ["Single URL at a time", "No history by default", "LAN only"],
+                future: ["Multi-item clipboard history", "QR code for mobile", "Persist history to SQLite"]
+            },
+            {
+                id: 3, name: "TempDrop", tag: "files", tagLabel: "Files",
+                desc: "Self-destructing file share with QR codes. One download, then gone.",
+                tagline: "Ephemeral LAN file sharing — one download, then gone.",
+                stack: ["Python 3", "Flask", "qrcode", "SQLite"],
+                problem: "Sharing a file once on LAN shouldn't require Samba or email. One-time URL + QR — self-destructs on download.",
+                features: ["Files deleted after first download", "QR code generated for every upload", "Optional expiry timer", "No login required", "LAN accessible"],
+                usage: `python3 app.py\n# Upload at http://<lan-ip>:5200`,
+                port: "5200",
+                limits: ["No resumable downloads", "Single upload per link", "Files stored temporarily on disk"],
+                future: ["Multi-file zipping", "Password-protected links", "Time-based expiry"]
+            },
+            {
+                id: 4, name: "QuickNote", tag: "lan", tagLabel: "Network",
+                desc: "Single persistent textarea over LAN. Always there on any device.",
+                tagline: "A shared persistent scratchpad accessible from every device on your LAN.",
+                stack: ["Python 3", "Flask", "HTML", "Vanilla JS"],
+                problem: "A shared scratchpad between devices without spinning up a full notes app.",
+                features: ["Single shared textarea across all devices", "Auto-save on every keystroke", "Plaintext storage", "Zero login", "Works on mobile browser"],
+                usage: `python3 app.py\n# Open http://<lan-ip>:5300 on any device`,
+                port: "5300",
+                limits: ["Single note only", "Last write wins on concurrent edits", "No formatting"],
+                future: ["Multiple named notes", "Markdown preview", "WebSocket real-time sync"]
+            },
+            {
+                id: 5, name: "NetWatch", tag: "lan", tagLabel: "Network",
+                desc: "Passive LAN monitor. Tracks devices joining and leaving the network.",
+                tagline: "Passive LAN device tracker with join/leave event logging and a live web dashboard.",
+                stack: ["Python 3", "scapy", "ARP", "SQLite", "Flask"],
+                problem: "Not knowing what's on your own LAN. Passively monitors ARP traffic and logs when devices appear or disappear.",
+                features: ["ARP-based device discovery — no agent required", "Join/leave logging with timestamps", "Hostname resolution where possible", "Live web dashboard", "Alert on unknown device"],
+                usage: `sudo python3 netwatch.py\n# Web UI at http://localhost:7000`,
+                port: "7000",
+                limits: ["Requires root for ARP sniffing", "No cross-subnet visibility", "Hostname resolution can be unreliable"],
+                future: ["Push notifications for unknown devices", "Device nickname system", "CSV export"]
+            },
+            {
+                id: 6, name: "SysWatch", tag: "sys", tagLabel: "System",
+                desc: "System metrics daemon. Logs CPU, RAM, disk and temp over time.",
+                tagline: "Lightweight system metrics daemon with persistent SQLite logging and a web interface.",
+                stack: ["Python 3", "psutil", "SQLite", "Flask"],
+                problem: "Knowing how your server is doing over time, not just right now. Logs metrics every N seconds.",
+                features: ["CPU, RAM, disk, temperature logging", "Configurable polling interval", "SQLite persistence", "Terminal sparkline view", "Web dashboard with time-range selector"],
+                usage: `python3 syswatch.py --interval 30\n# Web UI at http://localhost:7100`,
+                port: "7100",
+                limits: ["Temperature sensors vary by hardware", "No built-in alerting", "Web UI is read-only"],
+                future: ["Notification alerts on threshold breach", "CSV export", "Multi-host monitoring"]
+            },
+            {
+                id: 7, name: "DriftLog", tag: "sys", tagLabel: "System",
+                desc: "Passive activity logger. Tracks what app is active and for how long.",
+                tagline: "Passive desktop activity logger with a SQLite timeline queryable by app, day, or hour.",
+                stack: ["Python 3", "xdotool", "wmctrl", "SQLite", "Flask"],
+                problem: "Not knowing where your hours go. Records the active window every few seconds into a queryable timeline.",
+                features: ["Passive daemon — no input required", "Window title + application tracking", "SQLite timeline", "Daily summary report", "Web UI for browsing history"],
+                usage: `python3 driftlog.py &\npython3 report.py --today\n# Web UI at http://localhost:7200`,
+                port: "7200",
+                limits: ["X11 only — no Wayland support", "Private window titles may be logged", "No automatic redaction"],
+                future: ["Wayland support", "Productivity score over time", "Category tagging"]
+            },
+            {
+                id: 8, name: "ClipStack", tag: "util", tagLabel: "Utility",
+                desc: "Clipboard history manager. Every copy saved to SQLite, searchable via TUI.",
+                tagline: "Persistent clipboard history daemon with searchable TUI and SQLite storage.",
+                stack: ["Python 3", "pyperclip", "SQLite", "curses"],
+                problem: "Ctrl+Z can't un-overwrite your clipboard. Records everything you copy — retrieve any past entry instantly.",
+                features: ["Background daemon — captures every clipboard change", "SQLite persistence — survives reboots", "TUI search interface", "Deduplication of consecutive copies", "Configurable history size"],
+                usage: `python3 clipd.py &\npython3 clip.py\npython3 clip.py --search "api key"`,
+                port: null,
+                limits: ["Linux-only (xclip/xsel)", "No image clipboard support", "TUI requires terminal"],
+                future: ["Web UI for LAN access", "Image clipboard support", "Sync via SyncDrop"]
+            },
+            {
+                id: 9, name: "SyncDrop", tag: "files", tagLabel: "Files",
+                desc: "Bidirectional file sync over LAN via inotify and rsync. Set it once.",
+                tagline: "Real-time bidirectional folder sync over LAN using inotify and rsync over SSH.",
+                stack: ["Python 3", "inotify", "rsync", "SSH"],
+                problem: "Keeping a folder in sync across two LAN machines without Dropbox or Nextcloud.",
+                features: ["Real-time sync via inotify — no polling", "Bidirectional — changes flow both ways", "SSH transport", "Timestamp-based conflict resolution", "JSON config for paths and remote"],
+                usage: `python3 syncdrop.py --config sync.json`,
+                port: null,
+                limits: ["SSH key auth required on remote", "No three-way sync", "Large initial sync can be slow"],
+                future: ["Multi-host sync", "Web UI for sync status", "Conflict resolution UI"]
+            },
+            {
+                id: 10, name: "WatchFolder", tag: "files", tagLabel: "Files",
+                desc: "Watches a folder, auto-sorts incoming files by type and date.",
+                tagline: "Auto-sorting folder watcher — organises files by type and date as they arrive.",
+                stack: ["Python 3", "watchdog", "pathlib", "shutil"],
+                problem: "Downloads folder chaos. Sorts every incoming file into organised subfolders by type and date.",
+                features: ["Real-time monitoring via watchdog", "Sorts by type (images, docs, audio, video, archives)", "Date-based subfolder creation (YYYY/MM)", "Configurable rules per extension", "Dry-run mode"],
+                usage: `python3 watchfolder.py --watch ~/Downloads --config rules.json`,
+                port: null,
+                limits: ["Watchdog can miss rapid bulk copies", "No undo — moves are permanent", "Conflicts resolved by appending timestamp"],
+                future: ["Undo stack", "Web UI for rule editing", "Duplicate detection before moving"]
+            },
+            {
+                id: 11, name: "SnapStack", tag: "files", tagLabel: "Files",
+                desc: "Self-hosted photo backup. Deduplicates by hash, organises by EXIF date.",
+                tagline: "Local photo backup with SHA256 deduplication and date-based organisation.",
+                stack: ["Python 3", "watchdog", "Pillow", "SQLite"],
+                problem: "Google Photos alternatives that don't upload your photos to a cloud server.",
+                features: ["Auto-imports new photos from watched folder", "SHA256 deduplication", "EXIF date extraction", "Thumbnail generation", "Simple web gallery"],
+                usage: `python3 snapstack.py --watch ~/phone-sync --store ~/photos\n# Gallery at http://localhost:7300`,
+                port: "7300",
+                limits: ["No AI tagging", "Video support is basic", "Large libraries slow on first scan"],
+                future: ["AI tagging via local CLIP model", "Mobile upload app", "Album creation"]
+            },
+            {
+                id: 12, name: "FileVault", tag: "files", tagLabel: "Files",
+                desc: "Self-hosted file vault. Upload via web UI, get a shareable LAN link.",
+                tagline: "Minimal self-hosted file vault with web UI, LAN sharing, and SQLite metadata.",
+                stack: ["Python 3", "Flask", "SQLite", "HTML"],
+                problem: "A simple private file store on LAN without Nextcloud's complexity.",
+                features: ["Web UI file upload", "Shareable LAN download links", "SQLite metadata", "Optional password protection per file", "File expiry settings"],
+                usage: `python3 app.py\n# Access at http://<lan-ip>:5400`,
+                port: "5400",
+                limits: ["No folder support", "No file versioning", "LAN only"],
+                future: ["Folder upload support", "Versioning", "Public share links with expiry"]
+            },
+            {
+                id: 13, name: "GridWatch", tag: "hw", tagLabel: "Hardware",
+                desc: "Home power monitor. Logs consumption from a clamp meter or smart plug.",
+                tagline: "Local home power consumption monitor with trend logging and anomaly alerts.",
+                stack: ["Python 3", "serial / MQTT", "SQLite", "Flask"],
+                problem: "Not knowing which device is eating your electricity bill.",
+                features: ["Serial or MQTT input from clamp meter / smart plug", "Real-time wattage display", "SQLite consumption log", "Daily and weekly trend graphs", "Threshold alerts"],
+                usage: `python3 gridwatch.py --port /dev/ttyUSB0\n# Web UI at http://localhost:7400`,
+                port: "7400",
+                limits: ["Requires compatible hardware", "Single-phase only", "No tariff calculation"],
+                future: ["Tariff-based cost estimation", "Solar production tracking", "Home Assistant integration"]
+            },
+            {
+                id: 14, name: "MAKRO", tag: "hw", tagLabel: "Hardware",
+                desc: "Macropad firmware builder for Arduino Leonardo. JSON in, .ino out.",
+                tagline: "No-code macropad firmware generator for Arduino Leonardo — JSON in, .ino out.",
+                stack: ["C++ / Arduino", "HID library", "Python 3", "JSON config"],
+                problem: "Programming a macropad requires writing firmware by hand. MAKRO generates ready-to-flash code from a JSON config.",
+                features: ["JSON-driven macro definition — no C++ required", "Python code generator — outputs .ino file", "HID keyboard + media key support", "LED feedback per key", "Supports key combos and sequences"],
+                usage: `# Edit macros.json\npython3 generate.py macros.json\n# Flash output.ino to Arduino Leonardo`,
+                port: null,
+                limits: ["Arduino Leonardo / Pro Micro only", "No hot-reload — requires reflash", "Max 24 keys per board"],
+                future: ["EEPROM config — no reflash needed", "OLED display support", "Rotary encoder support"]
+            },
+            {
+                id: 15, name: "AudioDucker", tag: "audio", tagLabel: "Audio",
+                desc: "Detects when you speak, lowers background audio automatically.",
+                tagline: "Automatic audio ducking on voice detection — TFLite inference, zero hotkeys.",
+                stack: ["Python 3", "TensorFlow Lite", "PulseAudio", "pactl"],
+                problem: "Manually turning down music when you speak. AudioDucker detects voice and ducks volume automatically.",
+                features: ["TFLite voice activity detection — local inference", "PulseAudio integration — ducks all sinks", "Configurable duck level and hold time", "Near-zero perceived latency", "Runs as background daemon"],
+                usage: `python3 audioduck.py --duck 40 --hold 1.5`,
+                port: null,
+                limits: ["PulseAudio only", "100ms inference window", "False positives in noisy environments"],
+                future: ["PipeWire native support", "Per-application duck profiles", "Web UI for live level control"]
+            },
+            {
+                id: 16, name: "Crutch-Looper", tag: "audio", tagLabel: "Audio",
+                desc: "Browser-based loop pedal. Record, layer, and control loops from keyboard.",
+                tagline: "Browser-based multi-track loop pedal using the Web Audio API — no hardware required.",
+                stack: ["HTML", "Vanilla JS", "Web Audio API", "MediaRecorder API"],
+                problem: "Hardware loop pedals are expensive. Crutch-Looper runs in any browser — record, overdub, control from keyboard.",
+                features: ["Multi-track loop recording via MediaRecorder", "Keyboard-controlled record/play/overdub", "Visual waveform per track", "Per-track volume and mute", "Export mixed loop as WAV"],
+                usage: `# Open index.html in any browser\n# Space = record/stop, 1–8 = select track`,
+                port: null,
+                limits: ["Browser tab must stay active", "Latency depends on audio buffer size", "No MIDI control yet"],
+                future: ["MIDI pedal input", "BPM quantization", "Save/load loops via self-hosted backend"]
+            },
+            {
+                id: 17, name: "Simpol", tag: "util", tagLabel: "Utility",
+                desc: "Plain-English scripting language with REPL. 50+ commands, functions, loops.",
+                tagline: "Custom plain-English interpreter with REPL, local-scoped functions, loops, and file I/O.",
+                stack: ["Python 3", "Custom lexer/parser", "JSON"],
+                problem: "Bash is cryptic and Python is overkill for simple automation. Simpol reads like instructions.",
+                features: ["Plain-English syntax", "Interactive REPL", "50+ built-in commands", "Functions with local scoping", "foreach loops", "File I/O and JSON read/write"],
+                usage: `python3 simpol.py\npython3 simpol.py script.sim\n\n# set name to "world"\n# print "hello " + name`,
+                port: null,
+                limits: ["No standard library — builtins only", "No error recovery in REPL", "Interpreter only"],
+                future: ["Error recovery and line hints", "Standard library modules", "VS Code syntax highlighting"]
+            },
+            {
+                id: 18, name: "Herald", tag: "util", tagLabel: "Utility",
+                desc: "Local AI voice assistant. Talk to it, it responds via TTS, runs commands.",
+                tagline: "Terminal-based local AI voice assistant with local STT, Sarvam TTS, and command execution.",
+                stack: ["Python 3", "Sarvam AI API", "Whisper / Vosk", "subprocess"],
+                problem: "Voice assistants that work without sending audio to a cloud server, and can run local terminal commands.",
+                features: ["Wake-word activation", "Local STT via Whisper or Vosk", "AI response via Sarvam API", "TTS playback via Sarvam bulbul:v3", "Command execution mode"],
+                usage: `python3 herald.py\n# Say wake word → speak → hear response`,
+                port: null,
+                limits: ["STT accuracy varies on noisy input", "Latency on low-RAM machines", "Requires mic and speakers"],
+                future: ["Offline LLM fallback", "Home automation hooks", "Custom wake word training"]
+            }
+        ];
+
+        const grid = document.getElementById('grid');
+        const countLabel = document.getElementById('count-label');
+        const heroCount = document.getElementById('proj-count');
+
+        function render(filter) {
+            iconCounters = {};
+            const list = filter === 'all' ? projects : projects.filter(p => p.tag === filter);
+            // Update both count displays
+            countLabel.textContent = list.length + ' projects';
+            heroCount.textContent = list.length;
+            grid.innerHTML = list.map((p, i) => `
+    <div class="tile" style="animation-delay:${i * 20}ms" onclick="openSheet(${p.id})">
+      <div class="tile-icon ic-${p.tag}">${getIcon(p.tag)}</div>
+      <div class="tile-name">${p.name}</div>
+      <div class="tile-desc">${p.desc}</div>
+      <span class="tile-tag tag-${p.tag}">${p.tagLabel}</span>
+    </div>
+  `).join('');
+        }
+        render('all');
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                render(btn.dataset.filter);
+            });
+        });
+
+        const overlay = document.getElementById('overlay');
+        function openSheet(id) {
+            const p = projects.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('s-name').textContent = p.name;
+            document.getElementById('s-tagline').textContent = p.tagline;
+            document.getElementById('s-body').innerHTML = `
+    <div><div class="detail-label">The problem</div><p class="detail-text">${p.problem}</p></div>
+    <div><div class="detail-label">Features</div><ul class="detail-list">${p.features.map(f => `<li>${f}</li>`).join('')}</ul></div>
+    <div><div class="detail-label">Stack</div><div class="detail-stack">${p.stack.map(s => `<span class="detail-pill">${s}</span>`).join('')}</div></div>
+    <div><div class="detail-label">Usage</div><div class="detail-code">${p.usage}</div></div>
+    ${p.port ? `<div><div class="detail-label">Default port</div><span class="port-badge">:${p.port}</span></div>` : ''}
+    <div><div class="detail-label">Limitations</div><ul class="detail-list">${p.limits.map(l => `<li>${l}</li>`).join('')}</ul></div>
+    <div><div class="detail-label">Future</div><ul class="detail-list">${p.future.map(f => `<li>${f}</li>`).join('')}</ul></div>
+  `;
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeSheet() { overlay.classList.remove('open'); document.body.style.overflow = ''; }
+        document.getElementById('s-close').addEventListener('click', closeSheet);
+        overlay.addEventListener('click', e => { if (e.target === overlay) closeSheet(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+    </script>
+</body>
+
+</html>
