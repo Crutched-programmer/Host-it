@@ -4,7 +4,7 @@
 
 ## The Problem It Solves
 
-Cloud storage services are either paid, privacy-invasive, or have very limited storage space for the free tier ( 5GB for Microsoft Onedrive and 15GB for Google Drive ) . Keeping files organized on a local machine means either digging through folders manually or relying on a desktop search tool that indexes everything whether you want it to or not. File-Vault gives you a private, browser-accessible file store on your own hardware — upload anything, search by filename or tag, and retrieve it instantly. No account, no sync client, no internet required.
+Cloud storage services are either paid, privacy-invasive, or have very limited storage space for the free tier ( 5GB for Microsoft Onedrive and 15GB for Google Drive ) . Keeping files organized on a local machine means either digging through folders manually or relying on a desktop search tool that indexes everything whether you want it to or not. File-Vault gives you a private, browser-accessible file store on your own hardware — upload anything, search by filename or tag, and retrieve it instantly. No account, no sync client, just your files and your devices.
 
 ## Features
 
