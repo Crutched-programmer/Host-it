@@ -38,7 +38,348 @@ werkzeug>=2.0
 ```
 
 No heavy dependencies. Both packages install via pip in under a second.
+## Code 
+Copy and past this code and save it as <code> server.py </code>.
+~~~~
+# ===========================
+# File-Vault.py
+# Minimal Starter Implementation
+# ===========================
 
+import os
+import sqlite3
+import hashlib
+import mimetypes
+from datetime import datetime
+
+from flask import (
+    Flask,
+    request,
+    jsonify,
+    send_from_directory,
+    render_template_string,
+)
+from werkzeug.utils import secure_filename
+
+# ----------------------------
+# Configuration
+# ----------------------------
+
+PORT = 6060
+VAULT_DIR = "vault"
+DB_NAME = "File-Vault.db"
+MAX_UPLOAD_MB = 500
+
+os.makedirs(VAULT_DIR, exist_ok=True)
+
+app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MB * 1024 * 1024
+
+
+# ----------------------------
+# Database
+# ----------------------------
+
+conn = sqlite3.connect(DB_NAME, check_same_thread=False)
+cur = conn.cursor()
+
+cur.execute("""
+CREATE TABLE IF NOT EXISTS files (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    stored_name TEXT,
+    original_name TEXT,
+    upload_time TEXT,
+    size INTEGER,
+    tags TEXT,
+    notes TEXT,
+    md5 TEXT
+)
+""")
+
+conn.commit()
+
+
+# ----------------------------
+# Helpers
+# ----------------------------
+
+def md5_file(path):
+    h = hashlib.md5()
+
+    with open(path, "rb") as f:
+        while True:
+            chunk = f.read(8192)
+
+            if not chunk:
+                break
+
+            h.update(chunk)
+
+    return h.hexdigest()
+
+
+def unique_filename(filename):
+    base, ext = os.path.splitext(filename)
+
+    candidate = filename
+
+    counter = 1
+
+    while os.path.exists(os.path.join(VAULT_DIR, candidate)):
+        candidate = f"{base}_{counter}{ext}"
+        counter += 1
+
+    return candidate
+
+
+# ----------------------------
+# Homepage
+# ----------------------------
+
+@app.route("/")
+def home():
+
+    return render_template_string("""
+    <html>
+    <head>
+        <title>File Vault</title>
+    </head>
+
+    <body style="font-family:Arial;margin:40px">
+
+        <h1>📁 File Vault</h1>
+
+        <form action="/upload" method="POST"
+              enctype="multipart/form-data">
+
+            <input type="file" name="file">
+
+            <br><br>
+
+            <input
+                name="tags"
+                placeholder="Tags">
+
+            <br><br>
+
+            <textarea
+                name="notes"
+                placeholder="Notes"></textarea>
+
+            <br><br>
+
+            <button>Upload</button>
+
+        </form>
+
+        <hr>
+
+        <form action="/search">
+
+            <input
+                name="q"
+                placeholder="Search">
+
+            <button>Go</button>
+
+        </form>
+
+    </body>
+
+    </html>
+    """)
+
+
+# ----------------------------
+# Upload
+# ----------------------------
+
+@app.route("/upload", methods=["POST"])
+def upload():
+
+    if "file" not in request.files:
+        return "No file."
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        return "No filename."
+
+    filename = secure_filename(file.filename)
+    filename = unique_filename(filename)
+
+    path = os.path.join(VAULT_DIR, filename)
+
+    file.save(path)
+
+    md5 = md5_file(path)
+
+    cur.execute(
+        "SELECT id FROM files WHERE md5=?",
+        (md5,)
+    )
+
+    duplicate = cur.fetchone()
+
+    if duplicate:
+        os.remove(path)
+        return "Duplicate file detected."
+
+    size = os.path.getsize(path)
+
+    cur.execute("""
+        INSERT INTO files(
+            stored_name,
+            original_name,
+            upload_time,
+            size,
+            tags,
+            notes,
+            md5
+        )
+        VALUES(?,?,?,?,?,?,?)
+    """, (
+        filename,
+        file.filename,
+        datetime.now().isoformat(),
+        size,
+        request.form.get("tags", ""),
+        request.form.get("notes", ""),
+        md5
+    ))
+
+    conn.commit()
+
+    return "Upload successful."
+
+
+# ----------------------------
+# Search
+# ----------------------------
+
+@app.route("/search")
+def search():
+
+    q = request.args.get("q", "")
+
+    pattern = "%" + q + "%"
+
+    cur.execute("""
+        SELECT
+            id,
+            original_name,
+            tags,
+            notes,
+            upload_time
+        FROM files
+
+        WHERE
+            original_name LIKE ?
+            OR tags LIKE ?
+            OR notes LIKE ?
+    """, (
+        pattern,
+        pattern,
+        pattern
+    ))
+
+    rows = cur.fetchall()
+
+    return jsonify(rows)
+
+
+# ----------------------------
+# Download
+# ----------------------------
+
+@app.route("/file/<name>")
+def file(name):
+
+    return send_from_directory(
+        VAULT_DIR,
+        name,
+        as_attachment=True
+    )
+
+
+# ----------------------------
+# Edit Metadata
+# ----------------------------
+
+@app.route("/edit/<int:file_id>", methods=["POST"])
+def edit(file_id):
+
+    tags = request.form.get("tags", "")
+    notes = request.form.get("notes", "")
+
+    cur.execute("""
+        UPDATE files
+
+        SET
+            tags=?,
+            notes=?
+
+        WHERE id=?
+    """, (
+        tags,
+        notes,
+        file_id
+    ))
+
+    conn.commit()
+
+    return "Updated."
+
+
+# ----------------------------
+# Delete
+# ----------------------------
+
+@app.route("/delete/<int:file_id>", methods=["POST"])
+def delete(file_id):
+
+    cur.execute(
+        "SELECT stored_name FROM files WHERE id=?",
+        (file_id,)
+    )
+
+    row = cur.fetchone()
+
+    if row is None:
+        return "Not found."
+
+    path = os.path.join(
+        VAULT_DIR,
+        row[0]
+    )
+
+    if os.path.exists(path):
+        os.remove(path)
+
+    cur.execute(
+        "DELETE FROM files WHERE id=?",
+        (file_id,)
+    )
+
+    conn.commit()
+
+    return "Deleted."
+
+
+# ----------------------------
+# Start Server
+# ----------------------------
+
+if __name__ == "__main__":
+
+    print(f"Running on http://localhost:{PORT}")
+
+    app.run(
+        host="0.0.0.0",
+        port=PORT,
+        debug=False
+    )
+~~~~
 ## Install & Run
 
 ```bash
