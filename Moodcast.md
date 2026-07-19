@@ -51,7 +51,7 @@ moodcast/
 - One mood entry per day is enforced — submitting again overwrites today's entry
 - Forecast is calculated as a 7-day rolling average with a simple trend arrow
 - Change PORT constant at the top of server.py if 8080 is taken
-
+'''
 ===FILE: server.py===
 import sqlite3
 import os
@@ -263,4 +263,4 @@ if __name__ == "__main__":
     init_db()
     print(f"MoodCast running on http://0.0.0.0:{PORT}")
     print("Ctrl+C to stop.")
-    HTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
+    HTTPServer(("0.0.0.0", PORT), Handler).serve_forever()'''
