@@ -2,7 +2,7 @@
 > A self-hosted micro weather station for your emotions — log your mood, get a personal "forecast" for the week.
 
 ## The Problem It Solves
-You never remember how you actually felt last Tuesday, or why this week feels harder than last. MoodCast lets you log a daily mood score + note in seconds via any browser on your LAN. It then generates a personal "forecast" — a simple trend line showing whether your emotional weather is improving, stable, or stormy — no therapist login required.
+You never remember how you actually felt last Tuesday, or why this week feels harder than last. MoodCast lets you log a daily mood score + note in seconds via any browser on your LAN. It then generates a "7-day forecast" with personal trends.
 
 ## Features
 - One-click daily mood logging (1–5 scale + optional note)
@@ -53,7 +53,9 @@ moodcast/
 - Change PORT constant at the top of server.py if 8080 is taken
 
 
-===FILE: server.py===
+## FILE: server.py
+
+```python
 import sqlite3
 import os
 import time
@@ -150,7 +152,7 @@ def render_page():
     forecast_html = ""
     if forecast:
         avg, trend, label, color, icon = forecast
-        forecast_html = f'<div class="forecast" style="border-color:{color}"><span class="ficon">{icon}</span><span class="ftext">7-day forecast: <b style="color:{color}">{label}</b> &nbsp;{trend}&nbsp; avg {avg}/5</span></div>'
+        forecast_html = f'<div class="forecast" style="border-color:{color}"><span class="ficon">{icon}</span><span class="ftext">7-day forecast: <b style="color:{color}">{label}</b> &nbsp;{trend}</span><span style="color:{color};margin-left:auto">{avg}</span></div>'
     else:
         forecast_html = '<div class="forecast">Not enough data yet — log a few days first.</div>'
 
@@ -186,7 +188,7 @@ def render_page():
   .cell.empty {{ background: #1a1a1a; border: 1px solid #2a2a2a; }}
   .section {{ color: #555; font-size: 0.75em; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }}
   .moodrow {{ display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }}
-  .moodbtn {{ background: #1a1a1a; border: 2px solid #333; color: #ddd; padding: 10px 14px; cursor: pointer; font-family: monospace; font-size: 0.85em; display: flex; flex-direction: column; align-items: center; gap: 4px; border-radius: 4px; transition: border-color 0.15s; }}
+  .moodbtn {{ background: #1a1a1a; border: 2px solid #333; color: #ddd; padding: 10px 14px; cursor: pointer; font-family: monospace; font-size: 0.85em; display: flex; flex-direction: column; align-items: center; gap: 4px; border-radius: 4px; transition: all 0.15s; }}
   .moodbtn:hover, .moodbtn.selected {{ border-color: var(--c); color: var(--c); }}
   textarea {{ width: 100%; background: #1a1a1a; color: #ddd; border: 1px solid #333; padding: 8px; font-family: monospace; font-size: 0.85em; resize: vertical; margin-bottom: 8px; }}
   .submitbtn {{ background: #90d0ff; color: #111; border: none; padding: 8px 20px; font-family: monospace; font-weight: bold; cursor: pointer; }}
@@ -264,4 +266,5 @@ if __name__ == "__main__":
     init_db()
     print(f"MoodCast running on http://0.0.0.0:{PORT}")
     print("Ctrl+C to stop.")
-    HTTPServer(("0.0.0.0", PORT), Handler).serve_forever()```
+    HTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
+```
